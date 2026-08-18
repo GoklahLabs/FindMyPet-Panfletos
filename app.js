@@ -39,7 +39,7 @@ function initCopyButtons() {
           <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
           <span>Copiado!</span>
         `;
-        showToast('✅ Copy copiada para a área de transferência!');
+        showToast('Copy copiada para a área de transferência!', 'success');
 
         setTimeout(() => {
           button.classList.remove('copied');
@@ -49,7 +49,7 @@ function initCopyButtons() {
       } catch (err) {
         console.error('Erro ao copiar texto: ', err);
         execFallbackCopy(textToCopy.trim());
-        showToast('✅ Copy copiada!');
+        showToast('Copy copiada!', 'success');
       }
     });
   });
@@ -84,7 +84,6 @@ function initDownloadButtons() {
 
       if (!filePath) return;
 
-      // Se for link direto para download
       const link = document.createElement('a');
       link.href = filePath;
       link.download = fileName;
@@ -93,7 +92,7 @@ function initDownloadButtons() {
       link.click();
       document.body.removeChild(link);
 
-      showToast(`📥 Baixando ${fileName}...`);
+      showToast(`Baixando ${fileName}...`, 'download');
     });
   });
 }
@@ -108,7 +107,7 @@ function initShareButtons() {
     btn.addEventListener('click', async () => {
       const filePath = btn.getAttribute('data-file');
       const fileName = btn.getAttribute('data-name') || 'Cartaz_Nega';
-      const fileTitle = btn.getAttribute('data-title') || '🚨 PROCURA-SE: Gata NEGA 🐾';
+      const fileTitle = btn.getAttribute('data-title') || 'PROCURA-SE: Gata NEGA';
       const fileType = btn.getAttribute('data-type') || 'image/png';
       const targetCopyId = btn.getAttribute('data-copy-target');
       
@@ -119,7 +118,7 @@ function initShareButtons() {
         if (copyEl) shareText = (copyEl.innerText || copyEl.textContent).trim();
       }
 
-      showToast('Preparando compartilhamento...');
+      showToast('Preparando compartilhamento...', 'info');
 
       // Tenta compartilhar o arquivo nativamente
       try {
@@ -161,7 +160,6 @@ function initShareButtons() {
 }
 
 function fallbackShareDownload(filePath, fileName, shareText) {
-  // Baixa o arquivo e copia o texto da copy
   const link = document.createElement('a');
   link.href = filePath;
   link.download = fileName;
@@ -170,7 +168,7 @@ function fallbackShareDownload(filePath, fileName, shareText) {
   document.body.removeChild(link);
 
   execFallbackCopy(shareText);
-  showToast('📥 Arquivo baixado e Copy copiada para colar no WhatsApp!');
+  showToast('Arquivo baixado e Copy copiada para colar no WhatsApp!', 'success');
 }
 
 /**
@@ -187,7 +185,7 @@ function initLightbox() {
 
   const openModal = (src, caption) => {
     modalImg.src = src;
-    modalCaption.textContent = caption || 'Cartaz Gata Nega 🐾';
+    modalCaption.textContent = caption || 'Cartaz Gata Nega';
     modal.classList.add('active');
     modal.setAttribute('aria-hidden', 'false');
     document.body.style.overflow = 'hidden';
@@ -223,15 +221,23 @@ function initLightbox() {
 }
 
 /**
- * 5. Toast Notifications
+ * 5. Toast Notifications com Ícones SVG
  */
-function showToast(message, duration = 3200) {
+function showToast(message, type = 'info', duration = 3200) {
   const container = document.getElementById('toastContainer');
   if (!container) return;
 
+  let iconSvg = '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>';
+
+  if (type === 'success') {
+    iconSvg = '<svg viewBox="0 0 24 24" width="16" height="16" fill="#25D366"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>';
+  } else if (type === 'download') {
+    iconSvg = '<svg viewBox="0 0 24 24" width="16" height="16" fill="#f59e0b"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z"/></svg>';
+  }
+
   const toast = document.createElement('div');
   toast.className = 'toast-item';
-  toast.innerHTML = `<span>${message}</span>`;
+  toast.innerHTML = `${iconSvg}<span>${message}</span>`;
 
   container.appendChild(toast);
 
